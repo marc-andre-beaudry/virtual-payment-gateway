@@ -1,0 +1,66 @@
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:1.4.2.RELEASE")
+    }
+}
+
+plugins {
+    id "com.webcohesion.enunciate" version "2.7.1"
+}
+
+apply plugin: 'java'
+apply plugin: 'idea'
+apply plugin: 'eclipse'
+apply plugin: 'org.springframework.boot'
+apply plugin: "com.webcohesion.enunciate"
+
+jar {
+    baseName = 'virtual-payment-gateway'
+    version =  '0.1.0'
+}
+
+repositories {
+    mavenCentral()
+}
+
+compileJava {
+    sourceCompatibility = 1.8
+    targetCompatibility = 1.8
+}
+
+dependencies {
+    compile("org.springframework.boot:spring-boot-starter-web") {
+        exclude module: "spring-boot-starter-tomcat"
+    }
+    compile("org.springframework.boot:spring-boot-starter-jetty")
+    compile("org.springframework.boot:spring-boot-starter-actuator")
+    compile("org.springframework.boot:spring-boot-starter-data-jpa")
+    compile("com.h2database:h2:1.4.192")
+    compile("com.google.guava:guava:19.0")
+    compile("org.projectlombok:lombok:1.16.10")
+    compile("ma.glasnost.orika:orika-core:1.4.5")
+    compile("org.slf4j:slf4j-api:1.7.21")
+    testCompile("org.springframework:spring-test:4.2.4.RELEASE")
+    testCompile("org.assertj:assertj-core:2.5.0")
+    testCompile("junit:junit")
+    testCompile("org.mockito:mockito-core:2.2.28")
+}
+
+test {
+    include '**/*Test.class'
+    testLogging {
+        events "passed", "skipped", "failed"
+    }
+}
+
+tasks.enunciate {
+    File enunciateDistDir = file("src/main/resources/static/apidoc")
+    doFirst {
+        enunciateDistDir.deleteDir()
+        enunciateDistDir.mkdirs()
+    }
+    export("docs", enunciateDistDir)
+}
